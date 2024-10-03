@@ -3,10 +3,10 @@ import { Patient } from '../patient/patient.entity';
 
 @Entity()
 export class Disease {
-    @PrimaryGeneratedColumn()
-    id: number;
+    @PrimaryGeneratedColumn('uuid')
+    id: string;
 
-    @Column({ length: 100 })
+    @Column()
     diseaseName: string;
 
 

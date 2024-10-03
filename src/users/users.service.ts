@@ -13,7 +13,19 @@ export class UserService {
 
   // Find all users
   findAll(): Promise<User[]> {
-    return this.userRepository.find();
+    return this.userRepository.find(
+      {
+        relations: ['admin'], 
+        select: {
+          email: true,
+          phoneNumber: true,
+          status: true,
+            admin: {
+                firstName: true,
+                otherNames: true,
+            },
+        },
+    });
   }
 
   // Find one user by email

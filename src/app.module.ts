@@ -26,11 +26,20 @@ import { ProductRequestModule } from './product_request/product_request.module';
 import { ManufacturerModule } from './manufacturer/manufacturer.module';
 import { TransactionModule } from './transaction/transaction.module';
 import { Disease } from './disease/disease.entity';
+import { AdminModule } from './admin/admin.module';
+import { PricelistModule } from './pricelist/pricelist.module';
+import { PricelistProductsModule } from './pricelist_products/pricelist_products.module';
+import { MulterModule } from '@nestjs/platform-express';
+import { AppController } from './app.controller';
+
 dotenv.config(); 
 
 @Module({
   imports: [
-    
+    MulterModule.register({
+      dest: './uploads', // Temporary folder for file uploads
+    }),
+    TypeOrmModule.forFeature([PricelistProductsModule]),
     TypeOrmModule.forRoot({
       type: 'postgres',
       host: process.env.DB_HOST,
@@ -60,8 +69,13 @@ dotenv.config();
     ProductPricingModule,
     ProductRequestModule,
     ManufacturerModule,
-    TransactionModule
+    TransactionModule,
+    AdminModule,
+    PricelistModule,
+    PricelistProductsModule
   ],
   providers: [AuthService, LocalStrategy, SessionSerializer],
+  // controllers: [AppController],
+  
 })
 export class AppModule {}

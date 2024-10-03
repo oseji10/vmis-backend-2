@@ -1,20 +1,30 @@
+import { Product } from '../product/product.entity';
+import { User } from '../users/users.entity';
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, 
   CreateDateColumn,
   UpdateDateColumn,
   DeleteDateColumn,
-  OneToOne, } from 'typeorm';
+  OneToOne,
+  JoinColumn,
+  OneToMany, } from 'typeorm';
 // import { State } from '../state/state.entity';
 // import { State } from '../users/users.entity';
 
 @Entity()
-export class State {
+export class Supplier {
   @PrimaryGeneratedColumn('uuid')
     id: string;
   
     @Column()
-    stateName: string;
+    shortName: string;
+
+    @Column()
+    supplierName: string;
   
-   
+    @OneToOne(() => User, (user) => user.id)
+    @JoinColumn()
+    contactPerson: User;
+
      // Timestamp fields
   @CreateDateColumn({ type: 'timestamptz' }) // 'timestamptz' stores timezone info
   createdAt: Date;
@@ -25,5 +35,9 @@ export class State {
   // Soft delete field
   @DeleteDateColumn({ type: 'timestamptz', nullable: true })
   deletedAt?: Date;
+
+
+  @OneToMany(() => Product, (product) => product.supplier)
+  products: Product[];
 
 }

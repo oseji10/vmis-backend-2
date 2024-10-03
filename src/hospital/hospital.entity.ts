@@ -1,23 +1,28 @@
 import { Entity, PrimaryGeneratedColumn, JoinColumn, Column, OneToOne, CreateDateColumn, UpdateDateColumn, DeleteDateColumn } from 'typeorm';
 import { User } from '../users/users.entity';
+import { Admin } from './../admin/admin.entity';
 
 @Entity()
 export class Hospital {
-    @PrimaryGeneratedColumn()
-    id: number;
+    @PrimaryGeneratedColumn('uuid')
+    id: string;
 
-    @Column({ length: 100 })
+    @Column({nullable: true })
+    shortName: string;
+
+    @Column()
     hospitalName: string;
+
 
     @Column({nullable: true })
     location: string;
     
   
-    @OneToOne(() => User, (user) => user.hospitalAdmin)
+    @OneToOne(() => Admin, (admin) => admin.id)
     @JoinColumn()
-    hospitalAdmin: User;
+    hospitalAdmin: Admin;
 
-    @Column({nullable: true, enum: ['active', 'inactive'] })
+    @Column({nullable: true, enum: ['active', 'inactive'], default: 'active' })
     status: string;
 
     // Timestamp fields

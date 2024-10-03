@@ -14,7 +14,7 @@ export class StateController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: number) {
+  findOne(@Param('id') id: string) {
     return this.stateService.findOne(id);
   }
 
@@ -24,12 +24,12 @@ export class StateController {
   }
 
   @Put(':id')
-  update(@Param('id') id: number, @Body() state: State) {
+  update(@Param('id') id: string, @Body() state: State) {
     return this.stateService.update(id, state);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: number) {
+  remove(@Param('id') id: string) {
     return this.stateService.remove(id);
   }
 }

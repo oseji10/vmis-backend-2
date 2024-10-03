@@ -12,7 +12,7 @@ export class HospitalController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: number) {
+  findOne(@Param('id') id: string) {
     return this.hospitalService.findOne(id);
   }
 
@@ -22,12 +22,12 @@ export class HospitalController {
   }
 
   @Put(':id')
-  update(@Param('id') id: number, @Body() hospital: Hospital) {
+  update(@Param('id') id: string, @Body() hospital: Hospital) {
     return this.hospitalService.update(id, hospital);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: number) {
+  remove(@Param('id') id: string) {
     return this.hospitalService.remove(id);
   }
 }

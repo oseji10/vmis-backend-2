@@ -14,7 +14,7 @@ export class StateService {
     return this.stateRepository.find();
   }
 
-  findOne(id: number): Promise<State> {
+  findOne(id: string): Promise<State> {
     return this.stateRepository.findOne({ where: { id }});
   }
 
@@ -22,12 +22,12 @@ export class StateService {
     return this.stateRepository.save(state);
   }
 
-  async update(id: number, state: State): Promise<State> {
+  async update(id: string, state: State): Promise<State> {
     await this.stateRepository.update(id, state);
     return this.findOne(id);
   }
 
-  async remove(id: number): Promise<void> {
+  async remove(id: string): Promise<void> {
     await this.stateRepository.delete(id);
   }
 }

@@ -27,7 +27,7 @@ export class AuthController {
         const { password: _, ...userWithoutPassword } = user;
         session.user = userWithoutPassword;
     
-        return { message: 'Login successful', user: userWithoutPassword };
+        return { message: 'Login successful. Redirecting to dashboard...', user: userWithoutPassword };
     }
 
     // Protected route that requires the user to be authenticated
@@ -49,9 +49,9 @@ export class AuthController {
 
     // Register route
     @Post('register')
-    async register(@Body() body: { email: string; password: string, phoneNumber: string, status: string }) {
-        const { email, password, phoneNumber, status } = body; // Extract username and password from request body
-        const newUser = await this.userService.create(email, password, phoneNumber, status); // Pass variables to the service
+    async register(@Body() body: { email: string; phoneNumber: string, status: string, password: string }) {
+        const { email, phoneNumber, status, password } = body; // Extract username and password from request body
+        const newUser = await this.userService.create(email, phoneNumber, status, password); // Pass variables to the service
         return { message: 'User registered successfully', user: newUser };
     }
 }

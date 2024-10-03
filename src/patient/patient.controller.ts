@@ -1,6 +1,7 @@
 import { Controller, Get, Post, Body, Param, Delete, Put } from '@nestjs/common';
 import { PatientService } from './patient.service';
 import { Patient } from './patient.entity';
+import { CreatePatientDto } from './patient.dto';
 
 @Controller('patients')
 export class PatientController {
@@ -12,22 +13,22 @@ export class PatientController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: number) {
+  findOne(@Param('id') id: string) {
     return this.patientService.findOne(id);
   }
 
   @Post()
-  create(@Body() patient: Patient) {
-    return this.patientService.create(patient);
+  create(@Body() createPatientDto: CreatePatientDto) {
+    return this.patientService.createPatientWithUser(createPatientDto);
   }
 
   @Put(':id')
-  update(@Param('id') id: number, @Body() patient: Patient) {
+  update(@Param('id') id: string, @Body() patient: Patient) {
     return this.patientService.update(id, patient);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: number) {
+  remove(@Param('id') id: string) {
     return this.patientService.remove(id);
   }
 }
