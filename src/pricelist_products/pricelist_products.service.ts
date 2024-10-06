@@ -26,16 +26,16 @@ export class PricelistProductsService {
 
 findAll(): Promise<PricelistProducts[]> {
     return this.pricelistproductsRepository.find({
-        relations: ['product', 'pricelist'], 
+        relations: ['productId', 'pricelistId'], 
         select: {
             productId: {
                 shortName: true,
                 productName: true,
             },
-            pricelistId: {
-                pricelistId: true,
-                pricelistName: true,
-            },
+            // pricelistId: {
+            //     pricelistId: true,
+            //     pricelistName: true,
+            // },
         },
     });
 }

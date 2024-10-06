@@ -15,11 +15,18 @@ export class PricelistProducts {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @ManyToOne(() => Pricelist, (pricelist) => pricelist.id, { eager: true })
-  @JoinColumn()
-  pricelistId: Pricelist;
+  // @ManyToOne(() => Pricelist, (pricelist) => pricelist.id)
+  // @JoinColumn()
+  // pricelistId: Pricelist;
 
-  @ManyToOne(() => Product, (product) => product.id, { eager: true })
+  @ManyToOne(() => Pricelist, (pricelist) => pricelist.pricelist_products)
+  @JoinColumn({ name: 'pricelistId' })
+  pricelistId: Pricelist;
+  
+
+  
+
+  @ManyToOne(() => Product, (product) => product.id)
   @JoinColumn()
   productId: Product;
 
@@ -48,6 +55,8 @@ export class PricelistProducts {
   @JoinColumn()
   uploadedBy: User;
   
+@Column({nullable: true, enum:['active', 'inactive'], default: 'active'})
+status: string;
 
   // Timestamp fields
   @CreateDateColumn({ type: 'timestamptz' }) 

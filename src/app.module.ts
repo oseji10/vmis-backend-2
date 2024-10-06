@@ -10,7 +10,7 @@ import { UserModule } from './users/users.module';
 import { PharmacistModule } from './pharmacist/pharmacist.module';
 import { StateModule } from './state/state.module';
 import { StockModule } from './stock/stock.module';
-import { RequestModule } from './request/request.module';
+import { ProductRequestItemsModule } from './request/product_request_items.module';
 import { ProductModule } from './product/product.module';
 import { User } from './users/users.entity';
 import { State } from './state/state.entity';
@@ -31,6 +31,8 @@ import { PricelistModule } from './pricelist/pricelist.module';
 import { PricelistProductsModule } from './pricelist_products/pricelist_products.module';
 import { MulterModule } from '@nestjs/platform-express';
 import { AppController } from './app.controller';
+import { EmailService } from './email/email.service';
+import { EmailModule } from './email/email.module';
 
 dotenv.config(); 
 
@@ -58,7 +60,8 @@ dotenv.config();
     PharmacistModule,
     StateModule,
     StockModule,
-    RequestModule,
+    ProductRequestModule,
+    ProductRequestItemsModule,
     ProductModule,
     PatientModule, 
     HospitalModule,
@@ -72,9 +75,11 @@ dotenv.config();
     TransactionModule,
     AdminModule,
     PricelistModule,
-    PricelistProductsModule
+    PricelistProductsModule,
+    EmailModule,
+    StockModule
   ],
-  providers: [AuthService, LocalStrategy, SessionSerializer],
+  providers: [AuthService, LocalStrategy, SessionSerializer, EmailService],
   // controllers: [AppController],
   
 })

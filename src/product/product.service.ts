@@ -44,6 +44,14 @@ findAll(): Promise<Product[]> {
     return this.productRepository.findOne({ where: { id }});
   }
 
+  findProductsBySupplier(supplierId: string): Promise<Product[]> {
+    return this.productRepository.find({
+        where: { supplier: { id: supplierId } },
+    });
+}
+
+
+
   create(product: Product): Promise<Product> {
     return this.productRepository.save(product);
   }

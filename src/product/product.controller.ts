@@ -32,4 +32,11 @@ export class ProductController {
   remove(@Param('id') id: string) {
     return this.productService.remove(id);
   }
+
+
+    // Route to get products by supplier ID
+    @Get('supplier/:supplierId')
+    async findProductsBySupplier(@Param('supplierId') supplierId: string): Promise<Product[]> {
+      return this.productService.findProductsBySupplier(supplierId);
+    }
 }

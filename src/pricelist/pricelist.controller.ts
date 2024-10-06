@@ -2,10 +2,15 @@ import { Controller, Get, Post, Body, Param, Delete, Put, UseGuards } from '@nes
 import { PricelistService } from './pricelist.service';
 import { Pricelist } from './pricelist.entity';
 import { AuthGuard } from '@nestjs/passport';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 
 @Controller('pricelists')
 export class PricelistController {
-  constructor(private readonly pricelistService: PricelistService) {}
+  constructor(private readonly pricelistService: PricelistService,
+    @InjectRepository(Pricelist)
+    private readonly pricelistRepository: Repository<Pricelist>,
+  ) {}
   @UseGuards(AuthGuard('session'))
   
   @Get()
@@ -13,10 +18,10 @@ export class PricelistController {
     return this.pricelistService.findAll();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.pricelistService.findOne(id);
-  }
+  // @Get(':id')
+  // findOne(@Param('id') id: string) {
+  //   return this.pricelistService.findOne(id);
+  // }
 
   @Post()
   create(@Body() pricelist: Pricelist) {
@@ -32,4 +37,17 @@ export class PricelistController {
   remove(@Param('id') id: string) {
     return this.pricelistService.remove(id);
   }
+
+
+  // @Get(':id')
+  // async getPricelist(@Param('id') id: string): Promise<Pricelist> {
+  //   return this.pricelistService.getPricelistWithProducts(id);
+  // }
+
+
+  @Get(':id')
+  async getPricelistWithProducts(@Param('id') id: string): Promise<Pricelist> {
+    return this.pricelistService.findOneWithProducts(id);
+  }
+
 }

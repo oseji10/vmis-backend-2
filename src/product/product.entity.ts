@@ -4,6 +4,7 @@ import { Entity, PrimaryGeneratedColumn, Column, ManyToOne,
   CreateDateColumn,
   UpdateDateColumn,
   DeleteDateColumn,
+  JoinColumn,
 } from 'typeorm';
 
 @Entity()
@@ -23,10 +24,10 @@ export class Product {
   @Column()
   formulation: string;
 
-  // Many products can belong to one supplier
-  @ManyToOne(() => Supplier, (supplier) => supplier.id)
-  // @ManyToOne(() => Supplier, (supplier) => supplier.id, { eager: true })
-  supplier: Supplier;
+  @ManyToOne(() => Supplier, supplier => supplier.products)
+@JoinColumn({ name: 'supplierId' }) // Change this to the appropriate foreign key column name if needed
+supplier: Supplier;
+
 
   // Many products can belong to one manufacturer
   @ManyToOne(() => Manufacturer, (manufacturer) => manufacturer.id)

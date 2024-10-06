@@ -8,6 +8,7 @@ import { Entity, PrimaryGeneratedColumn, Column, ManyToOne,
   OneToMany,
   JoinColumn,
 } from 'typeorm';
+import { PricelistProducts } from '../pricelist_products/pricelist_products.entity';
 
 @Entity()
 export class Pricelist {
@@ -20,7 +21,6 @@ export class Pricelist {
   @Column()
   pricelistName: string;
 
-
   @ManyToOne(() => Supplier, (supplier) => supplier.id, { eager: true })
   @JoinColumn()
   supplierId: Supplier;
@@ -29,10 +29,17 @@ export class Pricelist {
   @JoinColumn()
   manufacturerId: Manufacturer;
 
-  @Column({default: 'inactive'})
+  @Column({ default: 'inactive' })
   status: string;
 
- 
+  // Adjust the relationship to reference pricelistId in PricelistProducts
+  // @OneToMany(() => PricelistProducts, (pricelist_products) => pricelist_products.pricelistId, { eager: true })
+  // pricelist_products: PricelistProducts[];
+
+  @OneToMany(() => PricelistProducts, (pricelist_products) => pricelist_products.pricelistId)
+  pricelist_products: PricelistProducts[];
+  
+
 
   // Timestamp fields
   @CreateDateColumn({ type: 'timestamptz' }) 
