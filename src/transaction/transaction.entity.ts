@@ -1,3 +1,4 @@
+import { Hospital } from '../hospital/hospital.entity';
 import { Admin } from '../admin/admin.entity';
 import { Product } from '../product/product.entity';
 import { User } from '../users/users.entity';
@@ -12,20 +13,29 @@ import { Entity, PrimaryGeneratedColumn, Column, ManyToOne,
 // import { State } from '../users/users.entity';
 
 @Entity()
-export class Manufacturer {
+export class Transaction {
   @PrimaryGeneratedColumn('uuid')
     id: string;
   
     @Column()
-    shortName: string;
+    transactionId: string;
 
-    @Column()
-    manufacturerName: string;
-  
+    @Column({nullable: true})
+    paymentMode: string;
+
     @OneToOne(() => Admin, (admin) => admin.id)
     @JoinColumn()
-    contactPerson: Admin;
+    soldBy: Admin;
 
+    @Column({ type: 'timestamptz', nullable: true })
+  paymentDate: Date;
+
+  @Column({ nullable: true})
+  amount: number;
+
+  @ManyToOne(() => Hospital, (hospital) => hospital.id)
+  @JoinColumn()
+   hospital: Hospital;
 
      // Timestamp fields
   @CreateDateColumn({ type: 'timestamptz' }) // 'timestamptz' stores timezone info
@@ -38,10 +48,10 @@ export class Manufacturer {
   @DeleteDateColumn({ type: 'timestamptz', nullable: true })
   deletedAt?: Date;
 
-  @OneToMany(() => Product, (product) => product.manufacturer)
-  products: Product[];
 
 
-  @Column({ nullable: true, enum: ['active', 'inactive'], default: 'active' })
+
+  @Column({ nullable: true, enum: ['paid', 'pending'], default: 'pending' })
   status: string;
+
 }

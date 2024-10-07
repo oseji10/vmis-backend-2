@@ -28,6 +28,8 @@ export class Product {
 @JoinColumn({ name: 'supplierId' }) // Change this to the appropriate foreign key column name if needed
 supplier: Supplier;
 
+@Column({nullable: true, enum:['active', 'inactive'], default: 'active'})
+status: string;
 
   // Many products can belong to one manufacturer
   @ManyToOne(() => Manufacturer, (manufacturer) => manufacturer.id)

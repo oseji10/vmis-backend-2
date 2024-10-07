@@ -77,7 +77,9 @@ dotenv.config();
     PricelistModule,
     PricelistProductsModule,
     EmailModule,
-    StockModule
+    // StockModule,
+    TransactionModule,
+    SaleModule
   ],
   providers: [AuthService, LocalStrategy, SessionSerializer, EmailService],
   // controllers: [AppController],

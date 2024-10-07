@@ -9,7 +9,9 @@ import {
   OneToOne,
   JoinColumn,
   OneToMany,
+  ManyToMany,
 } from 'typeorm';
+import { ProductRequestItems } from '../request/product_request_items.entity';
 // import { State } from '../state/state.entity';
 // import { State } from '../users/users.entity';
 
@@ -17,6 +19,9 @@ import {
 export class Stock {
   @PrimaryGeneratedColumn('uuid')
   id: string;
+
+  @Column({ nullable: false }) 
+  stockId: string;
 
   @Column({ nullable: false, type: 'varchar' })
   requestID: string;
@@ -27,10 +32,24 @@ export class Stock {
   productRequestId: ProductRequest;
 
 
+  @ManyToOne(() => Product, (product) => product.id)
+  @JoinColumn({ name: 'productId' }) // Ensure this correctly references the foreign key
+  productId: Product;
+
+
+
+  // @ManyToOne(() => ProductRequestItems, (productRequestItems) => productRequestItems.id)
+  // @JoinColumn({ name: 'requestID' })
+  // requestIDKey: ProductRequestItems;
+ 
+  // @ManyToOne(() => ProductRequestItems, (productRequestItems) => productRequestItems.requestID)
+  // @JoinColumn({ name: 'requestID', referencedColumnName: 'requestID' })
+  // requestIDKey: ProductRequestItems;
+
   @Column()
   batchNumber: string;
 
-  @Column()
+  @Column({nullable: true})
   quantityReceived: number;
 
   @Column({nullable: true})

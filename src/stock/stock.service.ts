@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Stock } from './stock.entity';
+import { Product } from 'src/product/product.entity';
 
 @Injectable()
 export class StockService {
@@ -11,7 +12,15 @@ export class StockService {
   ) {}
 
   findAll(): Promise<Stock[]> {
-    return this.stockRepository.find();
+    return this.stockRepository.find({relations:['productId'],
+        select:{
+            productId:{
+                shortName: true,
+                productName: true,
+                productDescription: true
+            }
+        }
+    });
   }
 
   findOne(id: string): Promise<Stock> {

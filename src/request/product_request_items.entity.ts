@@ -18,6 +18,8 @@ export class ProductRequestItems {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
+  
+
   @Column({ nullable: false, type:'varchar' })
   requestID: string;
 

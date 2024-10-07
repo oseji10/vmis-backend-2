@@ -112,15 +112,24 @@ findAll(): Promise<ProductRequestItems[]> {
 // ----------------------------------------------//
 
 // Generate random ID for request ID
-  generateRequestId(length: number): string {
-    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+generateRequestId(length: number): string {
+    const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+    const numbers = '0123456789';
+    const characters = letters + numbers;
+
+    // Ensure at least one letter and one number
     let result = '';
+    result += letters.charAt(Math.floor(Math.random() * letters.length)); // add a random letter
+    result += numbers.charAt(Math.floor(Math.random() * numbers.length)); // add a random number
+
     const charactersLength = characters.length;
-    for (let i = 0; i < length; i++) {
-      result += characters.charAt(Math.floor(Math.random() * charactersLength));
+    for (let i = 2; i < length; i++) { // Start from 2 to ensure 2 characters are already added
+        result += characters.charAt(Math.floor(Math.random() * charactersLength));
     }
+    
     return result;
-  }
+}
+
 
   // This is creates a new procurement request
   async createProductRequestWithItems(
@@ -190,11 +199,12 @@ async receiveProductToStock(id: string, productrequestitems: ProductRequestItems
     const updatedData = {
         receivedDate: new Date(), // Set to current date and time
         status: 'received', // Set status to 'received'
+        quantityReceived: productrequestitems.quantityReceived,
         // Include other properties if necessary
     };
 
     // Fetch the existing record to ensure it exists
-    const existingItem = await this.productRequestItemsRepository.findOne({ where: { id } });
+    const existingItem = await this.productRequestItemsRepository.findOne({ where: { id }, relations: ['productRequestId', 'product'] });
     if (!existingItem) {
         throw new Error('Product request item not found');
     }
@@ -211,11 +221,16 @@ async receiveProductToStock(id: string, productrequestitems: ProductRequestItems
   
 
     // Create a new record in the Stock table
+    const stockId = this.generateRequestId(10);
     const stockData = {
         receivedDate: updatedProductRequestItem.receivedDate,
         quantityReceived: updatedProductRequestItem.quantityReceived, // Assuming this is a valid property
         requestID: updatedProductRequestItem.requestID,
         batchNumber: updatedProductRequestItem.batchNumber,
+        productRequestId: updatedProductRequestItem.productRequestId,
+        productId: updatedProductRequestItem.product,
+        expiryDate: updatedProductRequestItem.expiryDate,
+        stockId: stockId,
     };
 
     // Save the new stock record
