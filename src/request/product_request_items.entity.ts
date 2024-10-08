@@ -80,6 +80,8 @@ export class ProductRequestItems {
   status: string;
 
   // Timestamp fields
+  @CreateDateColumn({ type: 'timestamptz' }) // 'timestamptz' stores timezone info
+  createdAt: Date;
 
   @UpdateDateColumn({ type: 'timestamptz' })
   updatedAt: Date;

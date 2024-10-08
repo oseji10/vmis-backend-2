@@ -134,7 +134,7 @@ generateRequestId(length: number): string {
           consultantMarkup: product.consultantMarkup,
           bankCharges: product.bankCharges,
           otherCharges: product.otherCharges
-          
+
       });
 
       salesRequest.push(sale);
@@ -144,7 +144,7 @@ generateRequestId(length: number): string {
   const transactionRequest = this.transactionRepository.create({
       ...transactionData,
       transactionId: transactionId,
-      amount: totalAmount // Set the calculated amount
+      amount: totalAmount
   });
 
   // Save the Transaction entity

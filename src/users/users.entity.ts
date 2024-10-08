@@ -8,13 +8,13 @@ export class User {
   @PrimaryGeneratedColumn('uuid')
   id: string; 
 
-  @Column({ nullable: true })
+  @Column({ nullable: true, unique:true })
   email: string;
 
   @Column({ nullable: true })
   password: string;
 
-  @Column({ length: 11, nullable: true })
+  @Column({ length: 11, nullable: true, unique: true })
   phoneNumber: string;
 
   @Column({ nullable: true, enum: ['active', 'inactive'], default: 'active' })

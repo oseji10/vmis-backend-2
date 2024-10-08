@@ -29,7 +29,7 @@ export class PatientService {
   ) {}
 
   findAll(): Promise<Patient[]> {
-    return this.patientRepository.find({ relations: ['hospital', 'diseaseType', 'user'],
+    return this.patientRepository.find({ relations: ['hospital', 'diseaseType', 'user', 'stateOfResidence', 'stateOfOrigin'],
       select: {
         hospital: {
           hospitalName: true,
@@ -45,14 +45,26 @@ export class PatientService {
             phoneNumber: true,
             status: true
           },
+          stateOfOrigin:{
+            stateName: true
+          },
+          stateOfResidence:{
+            stateName: true
+          },
+          
         },
     
      });
   }
 
-  findOne(id: string): Promise<Patient> {
-    return this.patientRepository.findOne({ where: { id }, relations: ['hospital'] });
+  async findOneByContactInfo(phoneNumber: string, email: string): Promise<Patient | null> {
+    return await this.patientRepository.createQueryBuilder('patient')
+      .innerJoinAndSelect('patient.user', 'user') // Assuming the relation is named 'user'
+      .where('user.phoneNumber = :phoneNumber', { phoneNumber })
+      .andWhere('user.email = :email', { email })
+      .getOne();
   }
+  
 
   
   async createPatientWithUser(data: CreatePatientDto): Promise<Patient> {
@@ -125,10 +137,10 @@ export class PatientService {
   
   
 
-  async update(id: string, patient: Patient): Promise<Patient> {
-    await this.patientRepository.update(id, patient);
-    return this.findOne(id);
-  }
+  // async update(id: string, patient: Patient): Promise<Patient> {
+  //   await this.patientRepository.update(id, patient);
+  //   return this.findOne(id);
+  // }
 
   async remove(id: string): Promise<void> {
     await this.patientRepository.delete(id);

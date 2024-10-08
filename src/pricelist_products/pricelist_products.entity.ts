@@ -30,22 +30,22 @@ export class PricelistProducts {
   @JoinColumn()
   productId: Product;
 
-  @Column({nullable: true})
+  @Column({nullable: true, type: 'decimal'})
   landedCost: number;
 
-  @Column({nullable: true})
+  @Column({nullable: true, type: 'decimal'})
   hospitalMarkup: number;
 
-  @Column({nullable: true})
+  @Column({nullable: true, type: 'decimal'})
   supplierMarkup: number;
 
-  @Column({nullable: true})
+  @Column({nullable: true, type: 'decimal'})
   consultantMarkup: number;
 
-  @Column({nullable: true})
+  @Column({nullable: true, type: 'decimal'})
   bankCharges: number;
 
-  @Column({nullable: true})
+  @Column({nullable: true, type: 'decimal'})
   otherCharges: number;
 
   @Column({nullable: true})

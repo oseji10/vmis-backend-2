@@ -9,6 +9,7 @@ import { Entity, PrimaryGeneratedColumn, Column, ManyToOne,
   OneToOne,
   JoinColumn,
   OneToMany, } from 'typeorm';
+import { Patient } from '../patient/patient.entity';
 // import { State } from '../state/state.entity';
 // import { State } from '../users/users.entity';
 
@@ -16,6 +17,10 @@ import { Entity, PrimaryGeneratedColumn, Column, ManyToOne,
 export class Transaction {
   @PrimaryGeneratedColumn('uuid')
     id: string;
+
+    @OneToMany(() => Patient, (patient) => patient.id)
+  @JoinColumn()
+   patient: Patient;
   
     @Column()
     transactionId: string;
@@ -30,7 +35,7 @@ export class Transaction {
     @Column({ type: 'timestamptz', nullable: true })
   paymentDate: Date;
 
-  @Column({ nullable: true})
+  @Column({ nullable: true, type: 'decimal'})
   amount: number;
 
   @ManyToOne(() => Hospital, (hospital) => hospital.id)

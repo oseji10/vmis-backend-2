@@ -13,8 +13,8 @@ export class PatientController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.patientService.findOne(id);
+  findOneByContactInfo(@Param('id') phoneNumber: string, email: string) {
+    return this.patientService.findOneByContactInfo(email, phoneNumber);
   }
 
   @Post()
@@ -22,10 +22,10 @@ export class PatientController {
     return this.patientService.createPatientWithUser(createPatientDto);
   }
 
-  @Put(':id')
-  update(@Param('id') id: string, @Body() patient: Patient) {
-    return this.patientService.update(id, patient);
-  }
+  // @Put(':id')
+  // update(@Param('id') id: string, @Body() patient: Patient) {
+  //   return this.patientService.update(id, patient);
+  // }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
