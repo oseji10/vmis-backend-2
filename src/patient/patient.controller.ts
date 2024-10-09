@@ -12,9 +12,9 @@ export class PatientController {
     return this.patientService.findAll();
   }
 
-  @Get(':id')
+  @Get('/find/:id')
   findOneByContactInfo(@Param('id') phoneNumber: string, email: string) {
-    return this.patientService.findOneByContactInfo(email, phoneNumber);
+    return this.patientService.findOneByContactInfo(phoneNumber, email);
   }
 
   @Post()

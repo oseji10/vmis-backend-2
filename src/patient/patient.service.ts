@@ -61,7 +61,7 @@ export class PatientService {
     return await this.patientRepository.createQueryBuilder('patient')
       .innerJoinAndSelect('patient.user', 'user') // Assuming the relation is named 'user'
       .where('user.phoneNumber = :phoneNumber', { phoneNumber })
-      .andWhere('user.email = :email', { email })
+      .orWhere('user.email = :email', { email })
       .getOne();
   }
   

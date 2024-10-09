@@ -8,11 +8,13 @@ import {
   DeleteDateColumn,
   OneToOne,
   JoinColumn,
+  OneToMany,
 } from 'typeorm';
 import { Hospital } from '../hospital/hospital.entity';
 import { User } from './../users/users.entity';
 import { State } from '../state/state.entity';
 import { Disease } from '../disease/disease.entity';
+import { Transaction } from '../transaction/transaction.entity';
 
 @Entity()
 export class Patient {
@@ -22,6 +24,9 @@ export class Patient {
   @OneToOne(() => User)
   @JoinColumn()
   user: User; // Changed from userId to user to reflect the relationship
+
+  @OneToMany(() => Transaction, (transaction) => transaction.patientId)
+  transaction: Transaction;
 
   @Column()
   firstName: string;
