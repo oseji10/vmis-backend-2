@@ -28,7 +28,7 @@ export class Transaction {
     @Column({nullable: true})
     paymentMode: string;
 
-    @OneToOne(() => Admin, (admin) => admin.id)
+    @ManyToOne(() => Admin, (admin) => admin.id)
     @JoinColumn()
     soldBy: Admin;
 

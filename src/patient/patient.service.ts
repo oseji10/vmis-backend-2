@@ -57,13 +57,15 @@ export class PatientService {
      });
   }
 
-  async findOneByContactInfo(phoneNumber: string, email: string): Promise<Patient | null> {
+  async findOneByContactInfo(contactInfo: string): Promise<Patient | null> {
+    const isEmail = contactInfo.includes('@'); // Simple check for email format
+  
     return await this.patientRepository.createQueryBuilder('patient')
-      .innerJoinAndSelect('patient.user', 'user') // Assuming the relation is named 'user'
-      .where('user.phoneNumber = :phoneNumber', { phoneNumber })
-      .orWhere('user.email = :email', { email })
+      .innerJoinAndSelect('patient.user', 'user')
+      .where(isEmail ? 'user.email = :contactInfo' : 'user.phoneNumber = :contactInfo', { contactInfo })
       .getOne();
   }
+  
   
 
   

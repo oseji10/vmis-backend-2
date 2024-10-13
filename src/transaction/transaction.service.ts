@@ -22,10 +22,22 @@ export class TransactionService {
     return this.transactionRepository.save(transaction);
   }
 
-  async update(id: string, transaction: Transaction): Promise<Transaction> {
-    await this.transactionRepository.update(id, transaction);
+  async markAsPaid(id: string): Promise<Transaction> {
+    // Update the status of the transaction to 'paid'
+    const result = await this.transactionRepository.update(
+      { id: id },  // Use the transactionId to find the record
+      { status: 'paid' }      // Update the status field
+    );
+  
+    // Check if the update affected any rows
+    if (result.affected === 0) {
+      throw new Error(`Transaction with ID ${id} not found or already paid`);
+    }
+  
+    // Retrieve and return the updated transaction
     return this.findOne(id);
   }
+  
 
   async remove(id: string): Promise<void> {
     await this.transactionRepository.delete(id);

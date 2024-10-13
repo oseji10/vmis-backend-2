@@ -23,10 +23,16 @@ export class TransactionController {
     return this.transactionService.create(transaction);
   }
 
-  @Put(':id')
-  update(@Param('id') id: string, @Body() transaction: Transaction) {
-    return this.transactionService.update(id, transaction);
-  }
+  // @Put(':id')
+  // update(@Param('id') id: string, @Body() transaction: Transaction) {
+  //   return this.transactionService.update(id, transaction);
+  // }
+
+  @Post('/confirm-payment/')
+async markTransactionAsPaid(@Body('id') id: string): Promise<Transaction> {
+  return this.transactionService.markAsPaid(id);
+}
+
 
   @Delete(':id')
   remove(@Param('id') id: string) {

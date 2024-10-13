@@ -1,10 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { MoreThan, Repository } from 'typeorm';
 import { Sale } from './sale.entity';
 import { Product } from '../product/product.entity';
 import { Transaction } from '../transaction/transaction.entity';
 import { PricelistProducts } from '../pricelist_products/pricelist_products.entity';
+import { Stock } from '../stock/stock.entity';
 
 @Injectable()
 export class SaleService {
@@ -15,6 +16,9 @@ export class SaleService {
     private transactionRepository: Repository<Transaction>,
     @InjectRepository(PricelistProducts)
     private pricelistRepository: Repository<PricelistProducts>,
+
+    @InjectRepository(Stock)
+    private stockRepository: Repository<Stock>,
   ) {}
 
   findAll(): Promise<Sale[]> {
@@ -88,8 +92,8 @@ generateRequestId(length: number): string {
     return result;
 }
 
- // This is creates a new transaction request
- async createTransactionSales(
+// This creates a new transaction request
+async createTransactionSales(
   transactionData: Partial<Transaction>,
   salesData: Partial<Sale[]>
 ): Promise<Transaction> {
@@ -102,64 +106,104 @@ generateRequestId(length: number): string {
   // Prepare Sales data with the same transactionId
   const salesRequest = [];
 
-  for (const item of salesData) {
+  // Start a transaction block
+  return await this.stockRepository.manager.transaction(async (entityManager) => {
+    for (const item of salesData) {
       // Fetch the product price using the product ID from the item
       const product = await this.pricelistRepository.findOne({
-          where: { productId: { id: item.product.id } }
+        where: { productId: { id: item.product.id } },
       });
 
       if (!product) {
-          throw new Error(`Product with ID ${item.product.id} not found`);
+        throw new Error(`Product with ID ${item.product.id} not found`);
       }
 
       // Calculate the amount for the current sale
       const saleAmount =
-          product.landedCost +
-          product.hospitalMarkup +
-          product.supplierMarkup +
-          product.consultantMarkup +
-          (product.bankCharges || 0) +
-          (product.otherCharges || 0);
+        (+product.landedCost || 0) +
+        (+product.hospitalMarkup || 0) +
+        (+product.supplierMarkup || 0) +
+        (+product.consultantMarkup || 0) +
+        (+product.bankCharges || 0) +
+        (+product.otherCharges || 0);
 
       // Accumulate the total amount
-      totalAmount += saleAmount;
+      totalAmount += saleAmount * item.quantitySold;
+
+      // Fetch all stocks sorted by expiry date to get the earliest stock first
+      const availableStocks = await this.stockRepository.find({
+        where: {
+          productId: product.productId,
+          quantityReceived: MoreThan(item.quantitySold),
+        },
+        order: {
+          expiryDate: 'ASC', // Get the stock with the least shelf life first
+        },
+      });
+
+      if (availableStocks.length === 0) {
+        throw new Error(`Stock not found or insufficient stock for product ID ${item.product.id}`);
+      }
+
+      let quantityToSell = item.quantitySold; // Track how much we need to sell
+
+      // Process each stock batch until the required quantity is sold
+      for (const stock of availableStocks) {
+        if (quantityToSell <= 0) break; // Stop if we've sold everything
+
+        const availableStockQuantity = stock.quantityReceived - stock.quantitySold;
+
+        // Determine how much can be sold from this batch
+        const soldFromThisBatch = Math.min(availableStockQuantity, quantityToSell);
+
+        // Update the stock's quantitySold
+        stock.quantitySold += soldFromThisBatch;
+        quantityToSell -= soldFromThisBatch; // Decrease the remaining quantity to sell
+
+        // Save the updated stock entity
+        await entityManager.save(stock);
+      }
+
+      if (quantityToSell > 0) {
+        throw new Error(`Insufficient stock for product ID ${item.product.id}`);
+      }
 
       // Create the Sale entity without linking the transaction yet
       const sale = this.saleRepository.create({
-          ...item,
-          saleId: transactionId,
-          landedCost: product.landedCost,
-          hospitalMarkup: product.hospitalMarkup,
-          supplierMarkup: product.supplierMarkup,
-          consultantMarkup: product.consultantMarkup,
-          bankCharges: product.bankCharges,
-          otherCharges: product.otherCharges
-
+        ...item,
+        saleId: transactionId,
+        landedCost: product.landedCost,
+        hospitalMarkup: product.hospitalMarkup,
+        supplierMarkup: product.supplierMarkup,
+        consultantMarkup: product.consultantMarkup,
+        bankCharges: product.bankCharges,
+        otherCharges: product.otherCharges,
       });
 
       salesRequest.push(sale);
-  }
+    }
 
-  // Create and save the Transaction with the calculated amount
-  const transactionRequest = this.transactionRepository.create({
+    // Create and save the Transaction with the calculated amount
+    const transactionRequest = this.transactionRepository.create({
       ...transactionData,
       transactionId: transactionId,
-      amount: totalAmount
-  });
+      amount: totalAmount,
+    });
 
-  // Save the Transaction entity
-  const savedTransactionRequest = await this.transactionRepository.save(transactionRequest);
+    // Save the Transaction entity
+    const savedTransactionRequest = await this.transactionRepository.save(transactionRequest);
 
-  // Now link the saved transaction to each sale
-  for (const sale of salesRequest) {
+    // Now link the saved transaction to each sale
+    for (const sale of salesRequest) {
       sale.transaction = savedTransactionRequest; // Associate the saved transaction
-  }
+    }
 
-  // Save all the Sales Items
-  await this.saleRepository.save(salesRequest);
+    // Save all the Sales Items
+    await this.saleRepository.save(salesRequest);
 
-  // Return the saved Transaction with associated items (if needed)
-  return savedTransactionRequest; // This will return the saved transaction
+    // Return the saved Transaction with associated items (if needed)
+    return savedTransactionRequest; // Ensure to return the transaction
+  });
 }
 
 
